@@ -1,4 +1,4 @@
-import posixpath
+import os
 
 from StringIO import StringIO
 
@@ -20,13 +20,18 @@ def setup_push_to_deploy(repository, deploy_script):
         with cd(repository):
             run('git init --bare')
 
-    post_receive_hook_path = posixpath.join(
+    post_receive_hook_path = os.path.join(
         repository, 'hooks', 'post-receive')
 
-    upload_template(deploy_script,
-                    post_receive_hook_path,
-                    context=env,
-                    mode='0755')
+    if isinstance(deploy_script, StringIO):
+        put(deploy_script,
+            post_receive_hook_path,
+            mode='0755')
+    else:
+        upload_template(deploy_script,
+                        post_receive_hook_path,
+                        context=env,
+                        mode='0755')
 
 
 @task
