@@ -17,6 +17,11 @@ def fetch_configuration():
     return configuration
 
 
+def put_configuration(configuration):
+    fd = StringIO(json.dumps(configuration))
+    put(fd, CONFIGURATION_FILE_NAME)
+
+
 @task
 def list_vars():
     configuration = fetch_configuration()
@@ -28,11 +33,17 @@ def list_vars():
 def set_var(name, value):
     configuration = fetch_configuration()
     configuration[name] = value
-    fd = StringIO(json.dumps(configuration))
-    put(fd, CONFIGURATION_FILE_NAME)
+    put_configuration(configuration)
 
 
 @task
 def get_var(name):
     configuration = fetch_configuration()
     return configuration.get(name, '')
+
+
+@task
+def set_vars(**kwargs):
+    configuration = fetch_configuration()
+    configuration.update(kwargs)
+    put_configuration(configuration)
