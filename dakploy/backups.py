@@ -56,7 +56,7 @@ fi;
 ###########################
 
 function perform_backups()
-{
+{{
     SUFFIX=$1
     FINAL_BACKUP_DIR=$BACKUP_DIR"`date +\%Y-\%m-\%d`$SUFFIX/"
 
@@ -72,7 +72,7 @@ function perform_backups()
     ### SCHEMA-ONLY BACKUPS ###
     ###########################
 
-    for SCHEMA_ONLY_DB in ${SCHEMA_ONLY_LIST//,/ }
+    for SCHEMA_ONLY_DB in ${{SCHEMA_ONLY_LIST//,/ }}
     do
             SCHEMA_ONLY_CLAUSE="$SCHEMA_ONLY_CLAUSE or datname ~ '$SCHEMA_ONLY_DB'"
     done
@@ -84,7 +84,7 @@ function perform_backups()
 
     SCHEMA_ONLY_DB_LIST=`psql -h "$HOSTNAME" -U "$USERNAME" -At -c "$SCHEMA_ONLY_QUERY" postgres`
 
-    echo -e "The following databases were matched for schema-only backup:\n${SCHEMA_ONLY_DB_LIST}\n"
+    echo -e "The following databases were matched for schema-only backup:\n${{SCHEMA_ONLY_DB_LIST}}\n"
 
     for DATABASE in $SCHEMA_ONLY_DB_LIST
     do
@@ -102,7 +102,7 @@ function perform_backups()
     ###### FULL BACKUPS #######
     ###########################
 
-    for SCHEMA_ONLY_DB in ${SCHEMA_ONLY_LIST//,/ }
+    for SCHEMA_ONLY_DB in ${{SCHEMA_ONLY_LIST//,/ }}
     do
         EXCLUDE_SCHEMA_ONLY_CLAUSE="$EXCLUDE_SCHEMA_ONLY_CLAUSE and datname !~ '$SCHEMA_ONLY_DB'"
     done
@@ -146,7 +146,7 @@ function perform_backups()
         /usr/local/bin/s3cmd put --recursive $FINAL_BACKUP_DIR s3://$S3_PREFIX/$(basename $FINAL_BACKUP_DIR)/
     fi
 
-}
+}}
 
 # MONTHLY BACKUPS
 
@@ -155,7 +155,7 @@ DAY_OF_MONTH=`date +%d`
 if [ $DAY_OF_MONTH = "1" ];
 then
     # Delete all expired monthly directories
-    find $BACKUP_DIR -maxdepth 1 -name "*-monthly" -exec rm -rf '{}' ';'
+    find $BACKUP_DIR -maxdepth 1 -name "*-monthly" -exec rm -rf '{{}}' ';'
 
     perform_backups "-monthly"
 
@@ -170,7 +170,7 @@ EXPIRED_DAYS=`expr $((($WEEKS_TO_KEEP * 7) + 1))`
 if [ $DAY_OF_WEEK = $DAY_OF_WEEK_TO_KEEP ];
 then
     # Delete all expired weekly directories
-    find $BACKUP_DIR -maxdepth 1 -mtime +$EXPIRED_DAYS -name "*-weekly" -exec rm -rf '{}' ';'
+    find $BACKUP_DIR -maxdepth 1 -mtime +$EXPIRED_DAYS -name "*-weekly" -exec rm -rf '{{}}' ';'
 
     perform_backups "-weekly"
 
@@ -180,7 +180,7 @@ fi
 # DAILY BACKUPS
 
 # Delete daily backups 7 days old or more
-find $BACKUP_DIR -maxdepth 1 -mtime +$DAYS_TO_KEEP -name "*-daily" -exec rm -rf '{}' ';'
+find $BACKUP_DIR -maxdepth 1 -mtime +$DAYS_TO_KEEP -name "*-daily" -exec rm -rf '{{}}' ';'
 
 
 perform_backups "-daily"
