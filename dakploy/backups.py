@@ -375,7 +375,7 @@ def setup_s3cmd(aws_access_key_id, aws_secret_access_key, s3cfg=None):
     # S3 config file (including credentials)
     require.file(
         '/var/lib/postgresql/.s3cfg',
-        content=s3cfg.format(
+        contents=s3cfg.format(
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key),
         use_sudo=True
